@@ -1,7 +1,9 @@
 import React , { useState, useEffect } from "react";
 import {isAuthenticated} from "../auth";
 import {Link} from "react-router-dom";
-import {getRazorpayOrderId, pay_razor, loadScript, razorpay_verify} from "./apiPayments"
+import {getRazorpayOrderId, pay_razor, loadScript, razorpay_verify} from "./apiPayments";
+import {emptyCart} from "./cartHelpers";
+import {createOrder} from "./apiOrders";
 
 const Checkout = ({products}) => {
 
@@ -34,6 +36,10 @@ const Checkout = ({products}) => {
         }).catch(err => console.log(err));
     })
     };
+
+    const handleAddress = event => {
+    	setData({...data, address: event.target.value})
+    }
 
 	const getTotal = () => {
     	return products.reduce((currentValue, nextValue) => {
@@ -73,6 +79,22 @@ const Checkout = ({products}) => {
 		    	    .then(order_details => {  // order details is a json with payment_status: true
 		    	    	// the generic verification function should return true / false  json ; this would help me integrate it ith the order db
 				        console.log(order_details); 
+
+				        const createOrderData = {
+				        	products: products,
+				        	// payment_id
+				        	//order_id
+				        	//amount
+				        	// address: data.add
+
+				        }
+				        createOrder(userId, token, createOrderData)
+				        setData({...data, success: order_details.payment_status});
+				        emptyCart(() => {
+				        	console.log("emptying cart");
+				        });
+				        //empty cart 
+				        // create order
 			        })
     				.catch(err => console.log(err));
     			})
@@ -87,7 +109,18 @@ const Checkout = ({products}) => {
 		<div>
 		{products.length > 0 ?  (
 			//<RazorpayComponent/>
+			<div>
+			<div className="form-group mb-3">
+                <label className="text-muted">Delivery address:</label>
+                <textarea
+                    onChange={handleAddress}
+                    className="form-control"
+                    value={data.address}
+                    placeholder="Type your delivery address here."
+                />
+			</div>
 		    <button onClick={buy} className="btn btn-success">Pay</button>
+		    </div>
 			) : null}
 		</div>
 	);
@@ -106,6 +139,8 @@ const Checkout = ({products}) => {
 	return (
 		<div>
 		    <h2>Total: INR {getTotal()}</h2>
+		    {showSuccess(data.success)}
+		    {showSuccess(data.error)}
 		    {showCheckout()}
 		</div>
 	);
