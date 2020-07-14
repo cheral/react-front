@@ -126,6 +126,12 @@ class Profile extends Component {
                                 >
                                     Edit Profile
                                 </Link>
+                                <Link
+                                    className="btn btn-raised btn-success mr-5"
+                                    to={`/user/Orders`}
+                                >
+                                    Get All Orders
+                                </Link>
                                 <DeleteUser userId={user._id} />
                             </div>
                         ) : (

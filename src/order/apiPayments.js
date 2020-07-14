@@ -46,8 +46,7 @@ export const razorpay_verify = (userId, data, token) => {
             return response.json();
         })
         .catch(err => console.log(err));
-};
-
+}; 
 
 export const pay_razor = (user, userId, amount, currency, order_id, token) => {
 	return new Promise((resolve, reject) => {
