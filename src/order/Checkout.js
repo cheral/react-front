@@ -19,7 +19,8 @@ const Checkout = ({products}) => {
 
 	const userId = isAuthenticated() && isAuthenticated().user._id;
     const token = isAuthenticated() && isAuthenticated().token;
-    const user = isAuthenticated() && isAuthenticated().user;
+	const user = isAuthenticated() && isAuthenticated().user;
+	let deliveryAddress = data.address
 
     const getToken = (userId, token) => {
     	return new Promise((resolve, reject) => {
@@ -60,7 +61,8 @@ const Checkout = ({products}) => {
     );
 
 
-    const showLoading = loading => loading && <h2 className="text-danger">Loading...</h2>;
+	const showLoading = loading => loading && <h2 className="text-danger">Loading...</h2>;
+	
 
 	const buy = () => {
     loadScript('https://checkout.razorpay.com/v1/checkout.js')
@@ -81,18 +83,23 @@ const Checkout = ({products}) => {
 				        console.log(order_details); 
 
 				        const createOrderData = {
-				        	products: products,
+							products: products,
+							transaction_id: order_details.transaction_id,
+							amount: order_details.amount,
+							address: data.address
 				        	// payment_id
 				        	//order_id
 				        	//amount
-				        	// address: data.add
-
-				        }
-				        createOrder(userId, token, createOrderData)
+							// address: data.add
+				
+						}
+						console.log(createOrderData);
+						createOrder(userId, token, createOrderData);
 				        setData({...data, success: order_details.payment_status});
 				        emptyCart(() => {
 				        	console.log("emptying cart");
-				        });
+						});
+						
 				        //empty cart 
 				        // create order
 			        })
@@ -115,7 +122,7 @@ const Checkout = ({products}) => {
                 <textarea
                     onChange={handleAddress}
                     className="form-control"
-                    value={data.address}
+                    value={deliveryAddress}
                     placeholder="Type your delivery address here."
                 />
 			</div>
